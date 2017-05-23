@@ -1,0 +1,37 @@
+version: '3'
+services:
+  web:
+    build: .
+    ports:
+     - "80:80"
+    volumes:
+     - .:/myapp
+     - ~/.ssh:/root/.ssh
+     - bundle:/bundle
+    environment:
+      BUNDLE_PATH: /bundle
+    depends_on:
+      - db
+      - redis
+      - rabbitmq
+    command: bundle exec rails s -p 80 -b 0.0.0.0
+  db:
+    image: mysql:5.7.18
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: fu_development
+    ports:
+      - "3306:3306"
+  redis:
+    image: redis:3.2.8
+    ports:
+      - "6379:6379"
+  rabbitmq:
+    image: rabbitmq:3.6.9-management
+    ports:
+      - "15672:15672"
+  memcached:
+    image: memcached:1.4.36
+
+volumes:
+  bundle:
